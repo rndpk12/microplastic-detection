@@ -1,0 +1,9 @@
+venv/
+dataset/
+train/
+valid/
+__pycache__/
+*.pyc
+*.jpg
+*.png
+detection_logs.csv
