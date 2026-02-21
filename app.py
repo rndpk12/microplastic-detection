@@ -1,5 +1,4 @@
 import streamlit as st
-from ultralytics import YOLO
 from PIL import Image
 import tempfile
 import io
@@ -8,14 +7,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
-from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
-import cv2
 
 # --------------------------------------------------
 # PAGE CONFIG
 # --------------------------------------------------
 st.set_page_config(
-    page_title="Microplastic Detection Research Dashboard",
+    page_title="Microplastic Detection Dashboard",
     layout="wide"
 )
 
@@ -23,10 +20,11 @@ st.title("🔬 Microplastic Detection Research Dashboard")
 st.markdown("---")
 
 # --------------------------------------------------
-# LOAD MODEL
+# SAFE MODEL LOADING (Delayed Import)
 # --------------------------------------------------
 @st.cache_resource
 def load_model():
+    from ultralytics import YOLO
     return YOLO("runs/detect/train2/weights/best.pt")
 
 model = load_model()
@@ -63,9 +61,11 @@ tab1, tab2, tab3, tab4 = st.tabs([
 ])
 
 # ======================================================
-# TAB 1 — DETECTION
+# TAB 1 — IMAGE DETECTION
 # ======================================================
 with tab1:
+
+    st.subheader("Upload Microscopic Image")
 
     confidence_threshold = st.slider(
         "Confidence Threshold",
@@ -73,7 +73,7 @@ with tab1:
     )
 
     uploaded_file = st.file_uploader(
-        "Upload Microscopic Image",
+        "Upload Image",
         type=["jpg", "jpeg", "png"]
     )
 
@@ -99,52 +99,11 @@ with tab1:
         img_bytes.seek(0)
 
         st.download_button(
-            "Download Result",
+            "Download Result Image",
             img_bytes,
             "detection_result.png",
             "image/png"
         )
-
-    # -----------------------------
-    # WEBCAM WITH OVERLAY COUNTER
-    # -----------------------------
-    st.markdown("### 🎥 Real-Time Webcam Detection")
-
-    detection_history = []
-    chart_placeholder = st.empty()
-
-    class VideoTransformer(VideoTransformerBase):
-        def transform(self, frame):
-            img = frame.to_ndarray(format="bgr24")
-
-            results = model(img, conf=confidence_threshold)
-            result = results[0]
-            annotated = result.plot()
-
-            count = len(result.boxes)
-
-            # Overlay counter
-            cv2.rectangle(annotated, (10, 10), (360, 70), (0, 0, 0), -1)
-            cv2.putText(
-                annotated,
-                f"Microplastics Detected: {count}",
-                (20, 50),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.8,
-                (0, 255, 0),
-                2
-            )
-
-            detection_history.append(count)
-
-            fig, ax = plt.subplots()
-            ax.plot(detection_history)
-            ax.set_title("Real-Time Detection Count")
-            chart_placeholder.pyplot(fig)
-
-            return annotated
-
-    webrtc_streamer(key="webcam", video_transformer_factory=VideoTransformer)
 
 # ======================================================
 # TAB 2 — METRICS
@@ -153,7 +112,7 @@ with tab2:
 
     st.subheader("Model Performance Metrics")
 
-    # Stored validation results
+    # Stored validation values
     precision = 0.761
     recall = 0.685
     map50 = 0.743
@@ -227,11 +186,11 @@ with tab4:
 
     ### Contribution
     - Real-time microplastic detection  
-    - Interactive dashboard  
+    - Interactive research dashboard  
     - Confusion matrix visualization  
     - Detection logging system  
-    - Environmental monitoring application  
+    - Environmental monitoring system  
     """)
 
 st.markdown("---")
-st.caption("Developed as Final Year AI Research Project")
+st.caption("Deployed on Streamlit Cloud | Final Year AI Project")
