@@ -8,20 +8,17 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
 
-# --------------------------------------------------
-# PAGE CONFIG
-# --------------------------------------------------
+
 st.set_page_config(
     page_title="Microplastic Detection Dashboard",
     layout="wide"
 )
 
-st.title("🔬 Microplastic Detection Research Dashboard")
+st.title("" \
+" Microplastic Detection Research Dashboard")
 st.markdown("---")
 
-# --------------------------------------------------
-# SAFE MODEL LOADING (Delayed Import)
-# --------------------------------------------------
+
 @st.cache_resource
 def load_model():
     from ultralytics import YOLO
@@ -29,9 +26,6 @@ def load_model():
 
 model = load_model()
 
-# --------------------------------------------------
-# LOGGING FUNCTION
-# --------------------------------------------------
 def log_detection(image_name, count, conf):
     log_data = {
         "Timestamp": datetime.now(),
@@ -50,19 +44,14 @@ def log_detection(image_name, count, conf):
 
     df.to_csv("detection_logs.csv", index=False)
 
-# --------------------------------------------------
-# TABS
-# --------------------------------------------------
 tab1, tab2, tab3, tab4 = st.tabs([
-    "🔍 Detection",
-    "📊 Metrics",
-    "📈 Analytics",
-    "📚 Research"
+    " Detection",
+    " Metrics",
+    " Analytics",
+    " Research"
 ])
 
-# ======================================================
-# TAB 1 — IMAGE DETECTION
-# ======================================================
+#
 with tab1:
 
     st.subheader("Upload Microscopic Image")
@@ -105,9 +94,7 @@ with tab1:
             "image/png"
         )
 
-# ======================================================
-# TAB 2 — METRICS
-# ======================================================
+
 with tab2:
 
     st.subheader("Model Performance Metrics")
@@ -138,9 +125,7 @@ with tab2:
         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
         st.pyplot(fig)
 
-# ======================================================
-# TAB 3 — ANALYTICS
-# ======================================================
+
 with tab3:
 
     st.subheader("Detection Analytics")
@@ -166,9 +151,7 @@ with tab3:
     except:
         st.info("No detection logs available yet. Upload an image first.")
 
-# ======================================================
-# TAB 4 — RESEARCH
-# ======================================================
+
 with tab4:
 
     st.subheader("Research Summary")
